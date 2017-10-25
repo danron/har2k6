@@ -16,12 +16,18 @@ var stream = fs.createReadStream(harFile, {encoding: 'utf8'}),
     output = "";
 
 // Functions for k6 scope
-function doRequest(method, url, postdata) {
-  http.get(method, url, postdata);
+
+output += `
+import { group } from "k6";
+import http from "k6/http";
+
+export let options = {
+  maxRedirects: 4
 }
 
-output += `${doRequest.toString()}\n\n\n`;
-//
+export default function() {
+
+`
 
 
 // Initialize JSONStream parser
@@ -34,8 +40,13 @@ parser.on('data', function (obj) {
 });
 parser.on('end', function() {
   console.log("\n\n| The Javascript:\n")
+  // Last brace
+     output += `
+  }
+  `
   console.log(output);
 });
+
 
 
 
